@@ -69,8 +69,6 @@ print("Wynik score na zbiorze treningowym")
 print(classifier.score(X, y))
 
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
 img_robot = 'robot.jpeg'
 encoded_img_robot = base64.b64encode(open(img_robot, 'rb').read())
 
