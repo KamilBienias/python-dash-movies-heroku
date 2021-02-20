@@ -76,10 +76,8 @@ app.layout = html.Div([
 
     html.Div([
         html.H4('Model Uczenia Maszynowego - wnioskowanie bayesowskie.'),
-        html.H6('Na podstawie bazy 2000 recencji filmowych model będzie wnioskował'),
-        html.H6('czy użytkownik ocenił film pozytywnie czy negatywnie.'),
-        html.H6('Co myślisz o filmach "Krótkie spięcie" z 1986 i 1988 roku?'),
-        html.H6("Opinię należy wpisać po angielsku.")
+        html.H6('Na podstawie bazy 2000 recencji filmowych model będzie wnioskował czy użytkownik ocenił film pozytywnie czy negatywnie.'),
+        html.H6('Co myślisz o filmach "Krótkie spięcie" z 1986 i 1988 roku? Opinię wpisz po angielsku.')
     ], style={'textAlign': 'center'}),
 
     html.Hr(),
