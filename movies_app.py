@@ -1,15 +1,17 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import base64
 from sklearn.feature_extraction.text import TfidfVectorizer
 import sklearn
+import pandas as pd
+import os
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
+# server = app.server
 
 # trenowanie modelu
 from sklearn.datasets import load_files
@@ -20,8 +22,8 @@ movie = raw_movie.copy()
 movie.keys()
 
 print()
-print("Dwie pierwsze recenzje:")
-print(movie['data'][:2])
+print("Dwie ostatnie recenzje:")
+print(movie['data'][-2:])
 
 print()
 print("0 to recenzja negatywna a 1 to pozytywna")
@@ -36,7 +38,7 @@ print("Nazwy dwoch pierwszych plikow z filmami")
 print(movie['filenames'][:2])
 
 print()
-print("Wszystkie 2000 recenzji biore do treningu")
+print("Wszystkie recenzje biore do treningu")
 X = movie['data']
 print("Rozmiar X =", len(X))
 y = movie['target']
@@ -76,7 +78,7 @@ app.layout = html.Div([
 
     html.Div([
         html.H4('Model Uczenia Maszynowego - wnioskowanie bayesowskie.'),
-        html.H6('Na podstawie bazy 2000 recencji filmowych model będzie wnioskował czy użytkownik ocenił film pozytywnie czy negatywnie.'),
+        html.H6('Na podstawie bazy ' + str(len(movie["data"])) + ' recencji filmowych model będzie wnioskował czy użytkownik ocenił film pozytywnie czy negatywnie.'),
         html.H6('Co myślisz o filmach "Krótkie spięcie" z 1986 i 1988 roku? Opinię wpisz po angielsku.')
     ], style={'textAlign': 'center'}),
 
@@ -101,8 +103,17 @@ app.layout = html.Div([
     dcc.Textarea(
         id='input-1',
         placeholder='Twoja opinia po angielsku...',
-        style={'width': '100%'},
+        style={'width': '50%'}
     ),
+
+    html.Button("Prześlij", id='button-1', n_clicks=0,
+                style={'color': 'blue',
+                       'background-color': 'yellow'}),
+
+    html.Div([
+            html.Div(id='output-2'),
+            html.Hr()
+    ], style={'margin': '0 auto', 'textAlign': 'center'}),
 
 
 ], style={'background-color': 'grey', 'color': 'white'})
@@ -115,10 +126,8 @@ app.layout = html.Div([
 def predict_sentiment(new_review):
 
     if new_review:
-        new_review = [new_review]
-        # to juz wczesniej utworzone
-        # tfidf = TfidfVectorizer(max_features=3000)
-        new_review_tfidf = tfidf.transform(new_review)
+        new_review_as_list = [new_review]
+        new_review_tfidf = tfidf.transform(new_review_as_list)
         new_review_prob = classifier.predict_proba(new_review_tfidf)
         new_review_prob_positive = new_review_prob[0][1]
         # print("new_review_prob")
@@ -140,5 +149,44 @@ def predict_sentiment(new_review):
                           'color': 'white'})
 
 
-# if __name__ == '__main__':
-#     app.run_server(debug=True)
+@app.callback(
+    Output('output-2', 'children'),
+    [Input('button-1', 'n_clicks'),
+     State('input-1', 'value')]
+)
+def save_recension(n_clicks, new_review):
+
+    if int(n_clicks) > 0:
+
+        # new_review_as_list = [new_review]
+        # new_review_dict = pd.DataFrame({'review': new_review_as_list})
+        # new_review_dict.to_csv('recenzje')
+
+        new_review_as_list = [new_review]
+        new_review_tfidf = tfidf.transform(new_review_as_list)
+        new_review_prob = classifier.predict_proba(new_review_tfidf)
+        new_review_prob_positive = new_review_prob[0][1]
+
+        if new_review_prob_positive > 0.5:
+            # ilosc filmow plus ilosc klikniec
+            file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
+            positive_path = os.path.join("movie_reviews", "pos", file_name)
+            text_file = open(positive_path, "w")
+            text_file.write(str(new_review))
+            text_file.close()
+
+            return html.Div(new_review)
+
+        elif new_review_prob_positive <= 0.5:
+            # ilosc filmow plus ilosc klikniec
+            file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
+            negative_path = os.path.join("movie_reviews", "neg", file_name)
+            text_file = open(negative_path, "w")
+            text_file.write(str(new_review))
+            text_file.close()
+
+            return html.Div(new_review)
+
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
