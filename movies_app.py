@@ -5,13 +5,12 @@ from dash.dependencies import Input, Output, State
 import base64
 from sklearn.feature_extraction.text import TfidfVectorizer
 import sklearn
-import pandas as pd
 import os
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-# server = app.server
+server = app.server
 
 # trenowanie modelu
 from sklearn.datasets import load_files
@@ -158,10 +157,6 @@ def save_recension(n_clicks, new_review):
 
     if int(n_clicks) > 0:
 
-        # new_review_as_list = [new_review]
-        # new_review_dict = pd.DataFrame({'review': new_review_as_list})
-        # new_review_dict.to_csv('recenzje')
-
         new_review_as_list = [new_review]
         new_review_tfidf = tfidf.transform(new_review_as_list)
         new_review_prob = classifier.predict_proba(new_review_tfidf)
@@ -188,5 +183,5 @@ def save_recension(n_clicks, new_review):
             return html.Div(new_review)
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+# if __name__ == '__main__':
+#     app.run_server(debug=True)
