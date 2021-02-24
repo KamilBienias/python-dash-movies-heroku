@@ -10,7 +10,7 @@ import os
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-# server = app.server
+server = app.server
 
 # trenowanie modelu
 from sklearn.datasets import load_files
@@ -194,5 +194,5 @@ def save_recension(n_clicks, new_review):
             ], style={"color": "red"})
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+# if __name__ == '__main__':
+#     app.run_server(debug=True)
