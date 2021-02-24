@@ -10,7 +10,7 @@ import os
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
+# server = app.server
 
 # trenowanie modelu
 from sklearn.datasets import load_files
@@ -99,6 +99,12 @@ app.layout = html.Div([
             html.Hr()
     ], style={'margin': '0 auto', 'textAlign': 'center'}),
 
+    # druga sekcja wynikowa
+    html.Div([
+            html.Div(id='output-2'),
+            html.Hr()
+    ], style={'margin': '0 auto', 'textAlign': 'center'}),
+
     dcc.Textarea(
         id='input-1',
         placeholder='Twoja opinia po angielsku...',
@@ -108,11 +114,6 @@ app.layout = html.Div([
     html.Button("Prześlij", id='button-1', n_clicks=0,
                 style={'color': 'blue',
                        'background-color': 'yellow'}),
-
-    html.Div([
-            html.Div(id='output-2'),
-            html.Hr()
-    ], style={'margin': '0 auto', 'textAlign': 'center'}),
 
 
 ], style={'background-color': 'grey', 'color': 'white'})
@@ -170,7 +171,12 @@ def save_recension(n_clicks, new_review):
             text_file.write(str(new_review))
             text_file.close()
 
-            return html.Div(new_review)
+            return html.Div([
+                html.H6("Rezenzja pozytywna z numerem " +
+                    str(len(movie['data']) + int(n_clicks))),
+                html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+                html.H6(new_review)
+            ], style={"color": "green"})
 
         elif new_review_prob_positive <= 0.5:
             # ilosc filmow plus ilosc klikniec
@@ -180,8 +186,13 @@ def save_recension(n_clicks, new_review):
             text_file.write(str(new_review))
             text_file.close()
 
-            return html.Div(new_review)
+            return html.Div([
+                html.H6("Rezenzja negatywna z numerem " +
+                         str(len(movie['data']) + int(n_clicks))),
+                html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+                html.H6(new_review)
+            ], style={"color": "red"})
 
 
-# if __name__ == '__main__':
-#     app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)
