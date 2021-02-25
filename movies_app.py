@@ -5,7 +5,6 @@ from dash.dependencies import Input, Output, State
 import base64
 from sklearn.feature_extraction.text import TfidfVectorizer
 import sklearn
-import pandas as pd
 import os
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
