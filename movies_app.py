@@ -111,7 +111,7 @@ app.layout = html.Div([
         style={'width': '50%'}
     ),
 
-    html.Button("Prześlij", id='button-1', n_clicks=0,
+    html.Button("Wyświetl podsumowanie", id='button-1', n_clicks=0,
                 style={'color': 'blue',
                        'background-color': 'yellow'}),
 
