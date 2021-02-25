@@ -110,7 +110,7 @@ app.layout = html.Div([
         placeholder='Twoja opinia po angielsku...',
         style={'width': '50%'}
     ),
-
+    # wczesniej bylo Przeslij, ale nie zapisywal nowej recenzji
     html.Button("Wyświetl podsumowanie", id='button-1', n_clicks=0,
                 style={'color': 'blue',
                        'background-color': 'yellow'}),
