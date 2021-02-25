@@ -154,8 +154,10 @@ def predict_sentiment(new_review):
     [Input('button-1', 'n_clicks'),
      State('input-1', 'value')]
 )
-def save_recension(n_clicks, new_review):
+def save_recension_adn_display_summary(n_clicks, new_review):
 
+    # niestety na heroku nie zapisuje nowych recenzji do folderu,
+    # ale na linuxie zapisuje
     if int(n_clicks) > 0:
 
         new_review_as_list = [new_review]
@@ -172,11 +174,17 @@ def save_recension(n_clicks, new_review):
             text_file.close()
 
             return html.Div([
-                html.H6("Rezenzja pozytywna z numerem " +
-                    str(len(movie['data']) + int(n_clicks))),
-                html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+                html.H6("Rezenzja pozytywna o treści:"),
                 html.H6(new_review)
             ], style={"color": "green"})
+
+            # tego nie uzywam na heroku bo nie zapisuje nowych recenzji
+            # return html.Div([
+            #     html.H6("Rezenzja pozytywna z numerem " +
+            #         str(len(movie['data']) + int(n_clicks))),
+            #     html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+            #     html.H6(new_review)
+            # ], style={"color": "green"})
 
         elif new_review_prob_positive <= 0.5:
             # ilosc filmow plus ilosc klikniec
@@ -187,11 +195,17 @@ def save_recension(n_clicks, new_review):
             text_file.close()
 
             return html.Div([
-                html.H6("Rezenzja negatywna z numerem " +
-                         str(len(movie['data']) + int(n_clicks))),
-                html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+                html.H6("Rezenzja negatywna o treści:"),
                 html.H6(new_review)
             ], style={"color": "red"})
+
+            # tego nie uzywam na heroku bo nie zapisuje nowych recenzji
+            # return html.Div([
+            #     html.H6("Rezenzja negatywna z numerem " +
+            #             str(len(movie['data']) + int(n_clicks))),
+            #     html.H6("będzie w zbiorze treningowym przy następnym uruchomieniu. Jej treść:"),
+            #     html.H6(new_review)
+            # ], style={"color": "red"})
 
 
 # if __name__ == '__main__':
