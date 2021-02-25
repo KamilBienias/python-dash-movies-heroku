@@ -5,12 +5,13 @@ from dash.dependencies import Input, Output, State
 import base64
 from sklearn.feature_extraction.text import TfidfVectorizer
 import sklearn
+import pandas as pd
 import os
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
+# server = app.server
 
 # trenowanie modelu
 from sklearn.datasets import load_files
@@ -52,13 +53,13 @@ X = tfidf.fit_transform(X)
 print()
 print(f'X shape: {X.shape}')
 
-print()
-print("Kazda recenzja to macierz rzadka. Na przyklad pierwsza:")
-print(X[0])
+# print()
+# print("Kazda recenzja to macierz rzadka. Na przyklad pierwsza:")
+# print(X[0])
 
-print()
-print("Wyswietla jako numpy")
-print(X[0].toarray())
+# print()
+# print("Wyswietla jako numpy")
+# print(X[0].toarray())
 
 from sklearn.naive_bayes import MultinomialNB
 
@@ -77,7 +78,7 @@ app.layout = html.Div([
 
     html.Div([
         html.H4('Model Uczenia Maszynowego - wnioskowanie bayesowskie.'),
-        html.H6('Na podstawie bazy ' + str(len(movie["data"])) + ' recencji filmowych model będzie wnioskował czy użytkownik ocenił film pozytywnie czy negatywnie.'),
+        html.H6('Na podstawie bazy ' + str(len(movie["data"])) + ' recenzji filmowych model będzie wnioskował czy użytkownik ocenił film pozytywnie czy negatywnie.'),
         html.H6('Co myślisz o filmach "Krótkie spięcie" z 1986 i 1988 roku? Opinię wpisz po angielsku.')
     ], style={'textAlign': 'center'}),
 
@@ -166,17 +167,47 @@ def save_recension_adn_display_summary(n_clicks, new_review):
         new_review_prob_positive = new_review_prob[0][1]
 
         if new_review_prob_positive > 0.5:
-            # ilosc filmow plus ilosc klikniec
-            file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
-            positive_path = os.path.join("movie_reviews", "pos", file_name)
-            text_file = open(positive_path, "w")
-            text_file.write(str(new_review))
-            text_file.close()
+            # usunalem bo nie da sie zapisywac na heroku
+            # numer to ilosc filmow plus ilosc klikniec
+            # file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
+            # positive_path = os.path.join("movie_reviews", "pos", file_name)
+            # text_file = open(positive_path, "w")
+            # text_file.write(str(new_review))
+            # text_file.close()
+
+            positive_folder = os.path.join("movie_reviews", "pos")
+            # lista slow z nowej recenzji
+            words_in_new_review = list(new_review.split())
+            print("words_in_new_review:")
+            print(words_in_new_review)
+
+            # pusty slownik wystapien slow
+            dict_of_words_with_counts = {}
+            # dla kazdego slowa z nowej recenzji
+            for word in words_in_new_review:
+                # zamienia wszystkie litery na male
+                word_lower_case = word.lower()
+                # inicjuje licznik wystapien danego slowa w calym folderze
+                word_counter = 0
+                # otwiera kazdy plik w folderze movie_reviews/pos
+                for filename in os.listdir(positive_folder):
+                    content = open(os.path.join(positive_folder, filename), "r")
+                    # bierze wiersze z pliku
+                    for line in content:
+                        # bierze kazde slowo z linii
+                        for word_in_text_file in line.split():
+                            if word_lower_case == word_in_text_file:
+                                word_counter += 1
+                print(word, word_counter)
+                dict_of_words_with_counts[word] = word_counter
 
             return html.Div([
                 html.H6("Rezenzja pozytywna o treści:"),
-                html.H6(new_review)
-            ], style={"color": "green"})
+                html.H6(new_review),
+                html.H6("Ilość powtórzeń każdego słowa w bazie recenzji pozytywnych:"),
+                html.Div(str(dict_of_words_with_counts))
+            ], style={"color": "green",
+                      "background-color": "white"})
 
             # tego nie uzywam na heroku bo nie zapisuje nowych recenzji
             # return html.Div([
@@ -187,17 +218,47 @@ def save_recension_adn_display_summary(n_clicks, new_review):
             # ], style={"color": "green"})
 
         elif new_review_prob_positive <= 0.5:
-            # ilosc filmow plus ilosc klikniec
-            file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
-            negative_path = os.path.join("movie_reviews", "neg", file_name)
-            text_file = open(negative_path, "w")
-            text_file.write(str(new_review))
-            text_file.close()
+            # usunalem bo nie da sie zapisywac na heroku
+            # numer to ilosc filmow plus ilosc klikniec
+            # file_name = "recenzja_" + str(len(movie['data']) + int(n_clicks)) + ".txt"
+            # negative_path = os.path.join("movie_reviews", "neg", file_name)
+            # text_file = open(negative_path, "w")
+            # text_file.write(str(new_review))
+            # text_file.close()
+
+            negative_folder = os.path.join("movie_reviews", "neg")
+            # lista slow z nowej recenzji
+            words_in_new_review = list(new_review.split())
+            print("words_in_new_review:")
+            print(words_in_new_review)
+
+            # pusty slownik wystapien slow
+            dict_of_words_with_counts = {}
+            # dla kazdego slowa z nowej recenzji
+            for word in words_in_new_review:
+                # zamienia wszystkie litery na male
+                word_lower_case = word.lower()
+                # inicjuje licznik wystapien danego slowa w calym folderze
+                word_counter = 0
+                # otwiera kazdy plik w folderze movie_reviews/neg
+                for filename in os.listdir(negative_folder):
+                    content = open(os.path.join(negative_folder, filename), "r")
+                    # bierze wiersze z pliku
+                    for line in content:
+                        # bierze kazde slowo z linii
+                        for word_in_text_file in line.split():
+                            if word_lower_case == word_in_text_file:
+                                word_counter += 1
+                print(word, word_counter)
+                dict_of_words_with_counts[word] = word_counter
 
             return html.Div([
                 html.H6("Rezenzja negatywna o treści:"),
-                html.H6(new_review)
-            ], style={"color": "red"})
+                html.H6(new_review),
+                html.H6("Ilość powtórzeń każdego słowa w bazie recenzji negatywnych:"),
+                html.Div(str(dict_of_words_with_counts))
+            ], style={"color": "red",
+                      "background-color": "white"})
 
             # tego nie uzywam na heroku bo nie zapisuje nowych recenzji
             # return html.Div([
@@ -208,5 +269,5 @@ def save_recension_adn_display_summary(n_clicks, new_review):
             # ], style={"color": "red"})
 
 
-# if __name__ == '__main__':
-#     app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)
