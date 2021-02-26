@@ -154,7 +154,7 @@ def predict_sentiment(new_review):
     [Input('button-1', 'n_clicks'),
      State('input-1', 'value')]
 )
-def save_recension_adn_display_summary(n_clicks, new_review):
+def save_recension_and_display_summary(n_clicks, new_review):
 
     # niestety na heroku nie zapisuje nowych recenzji do folderu,
     # ale na linuxie zapisuje
@@ -175,6 +175,8 @@ def save_recension_adn_display_summary(n_clicks, new_review):
             # text_file.close()
 
             positive_folder = os.path.join("movie_reviews", "pos")
+            # usuwa znaki interpunkcyjne
+            new_review = re.sub(r'[^\w\s]', '', new_review)
             # lista slow z nowej recenzji
             words_in_new_review = list(new_review.split())
             print("words_in_new_review:")
@@ -195,6 +197,8 @@ def save_recension_adn_display_summary(n_clicks, new_review):
                     for line in content:
                         # bierze kazde slowo z linii
                         for word_in_text_file in line.split():
+                            # usuwa znaki interpunkcyjne
+                            word_in_text_file = re.sub(r'[^\w\s]', '', word_in_text_file)
                             if word_lower_case == word_in_text_file:
                                 word_counter += 1
                 print(word, word_counter)
@@ -226,6 +230,8 @@ def save_recension_adn_display_summary(n_clicks, new_review):
             # text_file.close()
 
             negative_folder = os.path.join("movie_reviews", "neg")
+            # usuwa znaki interpunkcyjne
+            new_review = re.sub(r'[^\w\s]', '', new_review)
             # lista slow z nowej recenzji
             words_in_new_review = list(new_review.split())
             print("words_in_new_review:")
@@ -246,6 +252,8 @@ def save_recension_adn_display_summary(n_clicks, new_review):
                     for line in content:
                         # bierze kazde slowo z linii
                         for word_in_text_file in line.split():
+                            # usuwa znaki interpunkcyjne
+                            word_in_text_file = re.sub(r'[^\w\s]', '', word_in_text_file)
                             if word_lower_case == word_in_text_file:
                                 word_counter += 1
                 print(word, word_counter)
